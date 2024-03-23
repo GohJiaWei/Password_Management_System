@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Management System</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </head>
+
+  <body>
+    <div class="dashboard">
+    <div class="header-dashboard">
+      <a href="{{url_for('dashboard')}}">
+        <img class="logo" src="/static/image/logo.png" />
+      </a>
+      <div class="navbar-dashboard">
+        <a href="{{url_for('dashboard')}}">Password Vault</a>
+        <a href="{{url_for('strength')}}">Password Strength Meter</a>
+        <a href="{{url_for('education')}}">Educational Resources</a>
+        <a href="{{url_for('logout')}}"
+          ><button class="logout">Logout</button></a
+        >
+      </div>
+    </div>
+    <div class="container">
+    <form autocomplete="off" onsubmit="return false">
+
+		<div class="password-container">
+			<label>Enter Password</label>
+			<input type="text" name="password" id="password-field" >
+			
+			<div class="strength-container">
+				<p class="title">
+					Password strength:
+					<span class="strength-text"></span>
+				</p>
+				
+				<div class="strength-bar-wrapper">
+					<div id="strength-bar"></div>
+				</div>
+				<p class="strength-description">
+					Passwords should be at least <i>7</i> characters long and max <i>12</i>. <br>
+					Try use <strong>lowercasing</strong> and <strong>uppercasing</strong>, <strong>numbers</strong> and <strong>symbols</strong>.
+				</p>
+				<div class="arrow"></div>
+			</div>	
+		</div>
+
+		<!-- <button type="submit">Submit</button> -->
+	</form>
+    </div>
+    </div>
+    </body>
+
+    <script>
+        let password = document.querySelector("#password-field");
+let strengthContainer = document.querySelector(".strength-container");
+let strengthBar = document.querySelector("#strength-bar");
+let strengthText = document.querySelector(".strength-text");
+
+password.addEventListener("focus", function(){
+	strengthContainer.style.display = "block";
+});
+password.addEventListener("blur", function(){
+	strengthContainer.style.display = "none";
+});
+
+function setStrength(value){
+	strengthBar.style.width = value + "%";
+}
+
+function setColorAndText(color, text){
+	strengthBar.style.backgroundColor = color;
+	strengthText.innerHTML = text;
+	strengthText.style.color = color;
+}
+
+function clearStrength(){
+	strengthBar.style.width = 0;
+	strengthBar.style.backgroundColor = "";
+	strengthText.innerHTML = "";
+}
+
+password.addEventListener("keyup", checkPasswordStrength);
+function checkPasswordStrength(){
+	let strength = 0;
+
+	if(password.value == ""){
+		clearStrength();
+		return false;
+	}
+
+	if(password.value.match(/\s/)){
+		setColorAndText("red", "White space is not allowed");
+		return false;
+	}
+
+	if(password.value.match(/<|>/)){
+		setColorAndText("red", "< > characters are not allowed");
+		return false;
+	}
+
+	if(password.value.length > 12){
+		setColorAndText("red", "Password greater than 12 char.");
+		return false;
+	}
+
+	if(password.value.length < 7){
+		strength = 20;
+		setColorAndText("red", "Too short"); // short
+	}else{
+		
+		let lowerCase = password.value.match(/[a-z]/);
+		let upperCase = password.value.match(/[A-Z]/);
+		let numbers = password.value.match(/[0-9]/);
+		let specialCharacters = password.value.match(/[\!\~\@\&\#\$\%\^\&\*\(\)\{\}\?\-\_\+\=]/);
+
+		if(lowerCase || upperCase || numbers || specialCharacters){
+			strength = 40;
+			setColorAndText("red", "Weak"); // weak
+		}
+
+		if( 
+			(lowerCase && upperCase) || (lowerCase && numbers) || (lowerCase && specialCharacters) ||
+			(upperCase && numbers) || (upperCase && specialCharacters) || (numbers && specialCharacters)
+		  )
+		{
+			strength = 60;
+			setColorAndText("orange", "Medium");	// medium		
+		} 
+		
+		if( (lowerCase && upperCase && numbers) || (lowerCase && upperCase && specialCharacters) ||
+		    (lowerCase && numbers && specialCharacters) ||  (upperCase && numbers && specialCharacters)
+		  )
+		{
+			strength = 80;
+			setColorAndText("#088f08", "Strong");	// strong
+		}
+
+		if( lowerCase && upperCase && numbers && specialCharacters ) 
+		{
+			strength = 100;
+			setColorAndText("green", "Very Strong");	// very strong
+		}
+	}
+	setStrength(strength);
+}
+    </script>
+    <div class="footer">
+        <span>© Copyright 2024, Password Management System. All Rights Reserved.</span>
+    </div>
+  </body>
+</html>

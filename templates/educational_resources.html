@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Management System</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </head>
+
+  <body>
+    <div class="dashboard">
+    <div class="header-dashboard">
+      <a href="{{url_for('dashboard')}}">
+        <img class="logo" src="/static/image/logo.png" />
+      </a>
+      <div class="navbar-dashboard">
+        <a href="{{url_for('dashboard')}}">Password Vault</a>
+        <a href="{{url_for('strength')}}">Password Strength Meter</a>
+        <a href="{{url_for('education')}}">Educational Resources</a>
+        <a href="{{url_for('logout')}}"
+          ><button class="logout">Logout</button></a
+        >
+      </div>
+    </div>
+    <div class="dashboard-content">
+      
+      <div id="education-resource" class="education-resource">
+        <h3>Educational Resources</h3>
+        </div>
+        <div class="video-grid">
+      <div class="video-preview">
+        <div class="thumbnail-row">
+            <a
+          href="https://www.youtube.com/watch?v=xUp5S0nBnfc&pp=ygURcGFzc3dvcmQgc2VjdXJpdHk%3D"
+          >
+          <img class="thumbnail" src="/static/image/video-pic1.webp"></a>
+        </div>
+        <div class="video-info-grid">
+          <div class="channel-picture">
+            <img class="profile-picture" src="/static/image/profile1.jpg">
+          </div>
+          <div class="video-info">
+            <p class="video-title">
+              How to make passwords more secure
+            </p>
+            <p class="video-author">
+              IBM Technology
+            </p>
+            <p class="video-stats">
+              31K views &#183; 1 year ago
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-preview">
+        <div class="thumbnail-row">
+            <a
+          href="https://www.youtube.com/watch?v=YNvaf9UzZh4&pp=ygURcGFzc3dvcmQgc2VjdXJpdHk%3D"
+          >
+          <img class="thumbnail" src="/static/image/video-pic2.webp"></a>
+        </div>
+        <div class="video-info-grid">
+          <div class="channel-picture">
+            <img class="profile-picture" src="/static/image/profile2.jpg">
+          </div>
+          <div class="video-info">
+            <p class="video-title">
+              3 CRUCIAL Levels of Password Security (from EASY to INSANITY!!!!)
+            </p>
+            <p class="video-author">
+              All Things Secured
+            </p>
+            <p class="video-stats">
+              21K views &#183; 2 years ago
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-preview">
+        <div class="thumbnail-row">
+            <a href="https://www.youtube.com/watch?v=aHSI9bd8zZ8&pp=ygURcGFzc3dvcmQgc2VjdXJpdHk%3D">
+          <img class="thumbnail" src="/static/image/video-pic3.webp"></a>
+        </div>
+        <div class="video-info-grid">
+          <div class="channel-picture">
+            <img class="profile-picture" src="/static/image/profile3.jpg">
+          </div>
+          <div class="video-info">
+            <p class="video-title">
+              What does good password security entail
+            </p>
+            <p class="video-author">
+              Local Government Association
+            </p>
+            <p class="video-stats">
+              1.5K views &#183; 7 months ago
+            </p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="footer">
+        <span>© Copyright 2024, Password Management System. All Rights Reserved.</span>
+    </div>
+  </body>
+</html>

@@ -85,6 +85,13 @@ def load_user(user_id):
 def home():
     return render_template('index.html')
 
+@app.route('/education')
+def education():
+    return render_template('educational_resources.html')
+
+@app.route('/strength')
+def strength():
+    return render_template('strength.html')
 
 # @app.route('/login', methods=['GET', 'POST'])
 # def login():
