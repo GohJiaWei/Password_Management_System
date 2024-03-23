@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </head>
+
+  <body>
+    <div class="dashboard">
+    <div class="header-dashboard">
+      <a href="{{url_for('dashboard')}}">
+        <img class="logo" src="/static/image/logo.png" />
+      </a>
+      <div class="navbar-dashboard">
+        <a href="#password-vault">Password Vault</a>
+        <a href="#education-resource">Educational Resources</a>
+        <a href="{{url_for('logout')}}"
+          ><button class="logout">Logout</button></a
+        >
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="password-vault">
+        <h3>Password Vault</h3>
+        <div class="dashboard__generate--password">
+          <form action="{{ url_for('save_password') }}" method="POST" class="save__pass" onsubmit="return validateWebsite()">
+            <input type="text" name="gen--website" class="gen--website" placeholder="Website Name" required>
+              <input type="email" name="gen--username" class="gen--username" placeholder="Username / Email" required>
+              <input type="text" name="gen--pass" class="gen--pass" placeholder="Password" id="passwordInput" required>
+              <!-- Change this to a button and add onclick -->
+              <button type="button" class="generate-btn" onclick="generateStrongPassword()">Generate Password</button>
+              <button class="save-btn" type="submit">Save Password</button>
+              <p class="success__message"></p>
+          </form>
+
+          <script>
+            function generateStrongPassword() {
+                var length = 12; // Desired password length
+                var lowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
+                var upperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                var numericChars = "0123456789";
+                var specialChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+                var allChars = lowerCaseChars + upperCaseChars + numericChars + specialChars;
+                var retVal = "";
+            
+                // Ensure the password contains at least one of each required character type
+                retVal += lowerCaseChars.charAt(Math.floor(Math.random() * lowerCaseChars.length));
+                retVal += upperCaseChars.charAt(Math.floor(Math.random() * upperCaseChars.length));
+                retVal += numericChars.charAt(Math.floor(Math.random() * numericChars.length));
+                retVal += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+            
+                // Fill the rest of the password length with random characters from the entire charset
+                for (var i = 4, n = allChars.length; i < length; ++i) {
+                    retVal += allChars.charAt(Math.floor(Math.random() * n));
+                }
+            
+                // Shuffle the password to prevent predictable sequences
+                retVal = retVal.split('').sort(function() { return 0.5 - Math.random() }).join('');
+            
+                // Set the generated password as the value of the password input field
+                document.getElementById("passwordInput").value = retVal;
+            }
+            </script>  
+            
+            <script>
+              function validateWebsite() {
+                  var websiteInput = document.querySelector('.gen--website').value;
+                  var emailInput = document.querySelector('.gen--username').value;
+                  // Simple regex for a basic website validation
+                  var websitePattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+                  var emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/; // Simple email validation for completeness
+                  
+                  if (!websitePattern.test(websiteInput)) {
+                      alert('Please enter a valid website.');
+                      return false; // Prevent form submission
+                  }
+                  
+                  if (!emailPattern.test(emailInput)) {
+                      alert('Please enter a valid email.');
+                      return false; // Prevent form submission
+                  }
+              
+                  // If both checks pass, allow form submission
+                  return true;
+              }
+              </script>
+              
+          {% if error %}
+              <div class="error-message" style="white-space: pre-wrap;">{{ error|safe }}</div>
+          {% endif %}
+      
+
+        
+          </div>
+
+        <h3>All Password Here</h3>
+        <div class="hide dashboard__view--password">
+                <table class="password--table">
+                    <tr>
+                        <th>Website</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th><i class="fa-solid fa-trash"></i></th>
+                    </tr>
+
+                    {% for user in data %}
+                    <tr>
+                        <td>{{ user[1] }}</td> <!-- user[1] is the website name -->
+                        <td>{{ user[2] }}</td> <!-- user[2] is the email -->
+                        <td>{{ user[3] }}</td> <!-- user[3] is the password -->
+                        <td>
+                            <form action="{{ url_for('delete_password', id=user[0]) }}" method="POST">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="delete_password">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+      </div>
+      <div id="education-resource" class="education-resource">
+        <h3>Educational Resources</h3>
+        </div>
+        <div class="video-grid">
+      <div class="video-preview">
+        <div class="thumbnail-row">
+            <a
+          href="https://www.youtube.com/watch?v=xUp5S0nBnfc&pp=ygURcGFzc3dvcmQgc2VjdXJpdHk%3D"
+          >
+          <img class="thumbnail" src="/static/image/video-pic1.webp"></a>
+        </div>
+        <div class="video-info-grid">
+          <div class="channel-picture">
+            <img class="profile-picture" src="/static/image/profile1.jpg">
+          </div>
+          <div class="video-info">
+            <p class="video-title">
+              How to make passwords more secure
+            </p>
+            <p class="video-author">
+              IBM Technology
+            </p>
+            <p class="video-stats">
+              31K views &#183; 1 year ago
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-preview">
+        <div class="thumbnail-row">
+            <a
+          href="https://www.youtube.com/watch?v=YNvaf9UzZh4&pp=ygURcGFzc3dvcmQgc2VjdXJpdHk%3D"
+          >
+          <img class="thumbnail" src="/static/image/video-pic2.webp"></a>
+        </div>
+        <div class="video-info-grid">
+          <div class="channel-picture">
+            <img class="profile-picture" src="/static/image/profile2.jpg">
+          </div>
+          <div class="video-info">
+            <p class="video-title">
+              3 CRUCIAL Levels of Password Security (from EASY to INSANITY!!!!)
+            </p>
+            <p class="video-author">
+              All Things Secured
+            </p>
+            <p class="video-stats">
+              21K views &#183; 2 years ago
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-preview">
+        <div class="thumbnail-row">
+            <a href="https://www.youtube.com/watch?v=aHSI9bd8zZ8&pp=ygURcGFzc3dvcmQgc2VjdXJpdHk%3D">
+          <img class="thumbnail" src="/static/image/video-pic3.webp"></a>
+        </div>
+        <div class="video-info-grid">
+          <div class="channel-picture">
+            <img class="profile-picture" src="/static/image/profile3.jpg">
+          </div>
+          <div class="video-info">
+            <p class="video-title">
+              What does good password security entail
+            </p>
+            <p class="video-author">
+              Local Government Association
+            </p>
+            <p class="video-stats">
+              1.5K views &#183; 7 months ago
+            </p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="footer">
+        <span>© Copyright 2024, Password Management System. All Rights Reserved.</span>
+    </div>
+  </body>
+</html>
