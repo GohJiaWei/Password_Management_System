@@ -31,55 +31,43 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+# @login_manager.user_loader
+# def load_user(user_id):
+#     cur = mysql.connection.cursor()
+#     cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
+#     user = cur.fetchone()
+#     cur.close()
+#     if user:
+#         return user
+#     return None
+
+
+class User:
+    def __init__(self, id, email):
+        self.id = id
+        self.email = email
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
 @login_manager.user_loader
 def load_user(user_id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
-    user = cur.fetchone()
+    cur.execute("SELECT id, email FROM users WHERE id = %s", [user_id])
+    user_data = cur.fetchone()
     cur.close()
-    if user:
-        return user
+    if user_data:
+        return User(id=user_data[0], email=user_data[1])
     return None
-
-
-
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return User.query.get(int(user_id))
-
-
-# class User(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(20), nullable=False, unique=True)
-#     password = db.Column(db.String(80), nullable=False)
-
-
-# class RegisterForm(FlaskForm):
-#     username = StringField(validators=[
-#                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
-
-#     password = PasswordField(validators=[
-#                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
-
-#     submit = SubmitField('Register')
-
-#     def validate_username(self, username):
-#         existing_user_username = User.query.filter_by(
-#             username=username.data).first()
-#         if existing_user_username:
-#             raise ValidationError(
-#                 'That username already exists. Please choose a different one.')
-
-
-# class LoginForm(FlaskForm):
-#     username = StringField(validators=[
-#                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
-
-#     password = PasswordField(validators=[
-#                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
-
-#     submit = SubmitField('Login')
-
 
 @app.route('/')
 def home():
@@ -104,11 +92,12 @@ def strength():
 #                 return redirect(url_for('dashboard'))
 #     return render_template('login.html', form=form)
 
+from flask_login import login_user  # Ensure this is imported
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
-        # submitted_name = request.form['name']
         submitted_email = request.form['email']
         submitted_password = request.form['password']  # Get the password from form
         
@@ -117,7 +106,11 @@ def login():
         user = cur.fetchone()
         cur.close()
         
-        if user and bcrypt.check_password_hash(user[2], submitted_password):  # Assuming password is at index 3
+        # Check if user exists and password is correct
+        # Assuming user[1] is email and user[2] is the hashed password
+        if user and bcrypt.check_password_hash(user[2], submitted_password):
+            user_obj = User(id=user[0], email=user[1])  # Create a User object
+            login_user(user_obj)  # Log in the user
             return redirect(url_for('setup_2fa'))
         else:
             error = "Login Failed. Please try again."
@@ -126,8 +119,9 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
+    user_id = current_user.get_id()
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM password_stored")
+    cur.execute("SELECT * FROM password_stored WHERE user_id = %s", [user_id])
     fetchdata = cur.fetchall()
     cur.close()
     return render_template('dashboard.html', data=fetchdata)
@@ -153,12 +147,16 @@ def is_strong_password(password):
         return False
     return True
 
+from flask_login import current_user
+
 @app.route('/save_password', methods=['POST'])
 def save_password():
     if request.method == 'POST':
         website_name = request.form['gen--website']
         email = request.form['gen--username']
         password = request.form['gen--pass']
+        user_id = current_user.get_id()  # Assuming you have the get_id method in your User class
+
 
         if not is_strong_password(password):
             cur = mysql.connection.cursor()
@@ -181,7 +179,7 @@ def save_password():
             return render_template('dashboard.html', error="An entry for this website with the specified email already exists. Please try a different email or website name.", data=fetchdata)
 
         # Insert the new password entry into the database if it's strong and unique for the website/email combination
-        cur.execute("INSERT INTO password_stored(website_name, email, password) VALUES(%s, %s, %s)", (website_name, email, password))
+        cur.execute("INSERT INTO password_stored(website_name, email, password, user_id) VALUES(%s, %s, %s, %s)", (website_name, email, password, user_id))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('dashboard'))
@@ -252,6 +250,7 @@ from io import BytesIO
 @app.route('/setup_2fa')
 def setup_2fa():
     key = pyotp.random_base32()
+    # key = "JBSWY3DPEHPK3PXP"  # For demonstration purposes, use a fixed key
     session['otp_secret'] = key  # Store the secret key in the session
 
     uri = pyotp.totp.TOTP(key).provisioning_uri(name="User", issuer_name="Password Management System")

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 20, 2024 at 05:44 PM
+-- Generation Time: Mar 24, 2024 at 05:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,15 +31,9 @@ CREATE TABLE `password_stored` (
   `id` int(100) NOT NULL,
   `website_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `user_id` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `password_stored`
---
-
-INSERT INTO `password_stored` (`id`, `website_name`, `email`, `password`) VALUES
-(10, 'www.edwin.com', 'edwin@gmail.com', 'Whm+N=8C3?!0');
 
 -- --------------------------------------------------------
 
@@ -59,8 +53,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`) VALUES
 (1, 'edwin@gmail.com', '$2b$12$wQEIcC8HhHal7MspIvP1suxT2EKJZk4VBTf/4YPh7hb5RSJFo6dyG'),
-(2, 'jiawei@gmail.com', '$2b$12$HTThNRbX6/in/N.5MYkWgut1Tavd.x4zmLpa3esUN7C5dJi61ezr2'),
-(3, 'edwinchia0710@gmail.com', '$2b$12$NsuBr2X60V0qJQERBSKTCuHu1M83LSod1j8UP5VD6XDY.BvWu17Eu');
+(2, 'jiawei@gmail.com', '$2b$12$HTThNRbX6/in/N.5MYkWgut1Tavd.x4zmLpa3esUN7C5dJi61ezr2');
 
 --
 -- Indexes for dumped tables
@@ -70,7 +63,8 @@ INSERT INTO `users` (`id`, `email`, `password`) VALUES
 -- Indexes for table `password_stored`
 --
 ALTER TABLE `password_stored`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_user_id` (`user_id`);
 
 --
 -- Indexes for table `users`
@@ -86,22 +80,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `password_stored`
 --
 ALTER TABLE `password_stored`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `password_stored`
+--
+ALTER TABLE `password_stored`
+  ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
--- pip install Flask-Bcrypt
-
--- pip install Flask-MySQLdb
--- # or
--- pip install mysql-connector-python
