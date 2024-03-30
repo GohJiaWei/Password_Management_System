@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2024 at 05:38 PM
+-- Generation Time: Mar 30, 2024 at 09:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,7 +31,7 @@ CREATE TABLE `password_stored` (
   `id` int(100) NOT NULL,
   `website_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `password` blob NOT NULL,
   `user_id` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -44,16 +44,9 @@ CREATE TABLE `password_stored` (
 CREATE TABLE `users` (
   `id` int(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL
+  `password` varchar(100) NOT NULL,
+  `otp_secret` varchar(32) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `email`, `password`) VALUES
-(1, 'edwin@gmail.com', '$2b$12$wQEIcC8HhHal7MspIvP1suxT2EKJZk4VBTf/4YPh7hb5RSJFo6dyG'),
-(2, 'jiawei@gmail.com', '$2b$12$HTThNRbX6/in/N.5MYkWgut1Tavd.x4zmLpa3esUN7C5dJi61ezr2');
 
 --
 -- Indexes for dumped tables
@@ -80,13 +73,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `password_stored`
 --
 ALTER TABLE `password_stored`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables
